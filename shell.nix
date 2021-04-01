@@ -2,5 +2,9 @@
 }:
 
 pkgs.mkShell {
-  buildInputs = [ pkgs.idris2 pkgs.idrisPackages.prelude ];
+  buildInputs = [
+    pkgs.idris2
+    pkgs.idrisPackages.prelude
+    pkgs.haskellPackages.idringen
+  ];
 }

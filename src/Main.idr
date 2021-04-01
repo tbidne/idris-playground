@@ -14,7 +14,7 @@ testPred p = testPredHelper p 0
     testPredHelper : (Nat -> Bool) -> Nat -> Partial Nat
     testPredHelper p n = case p n of
       True  => Now n
-      False => Later (testPredHelper p (n+1))
+      False => Later $ testPredHelper p $ n + 1
 
 main : IO ()
 main = do
