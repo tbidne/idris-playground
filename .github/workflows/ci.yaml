@@ -1,0 +1,50 @@
+name: "build"
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.3.4
+
+    - name: setup nix
+      uses: cachix/install-nix-action@v12
+
+    - run: nix-shell --run "idris2 ./src/Main.idr --source-dir ./src -o idris-pg"
+
+    - name: Upload exe
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-dir
+        path: ./build/exec/
+
+  run:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v2.3.4
+
+    - name: setup nix
+      uses: cachix/install-nix-action@v12
+
+    - name: Download exe
+      uses: actions/download-artifact@v2
+      with:
+        name: build-dir
+        path: ./build/exec
+
+    - run: nix-shell --run "chmod a+x -R ./build/exec && ./build/exec/idris-pg"
+  
+  cleanup:
+    runs-on: ubuntu-latest
+    needs: run
+    steps:
+    - uses: geekyeggo/delete-artifact@v1
+      with:
+        name: build-dir
